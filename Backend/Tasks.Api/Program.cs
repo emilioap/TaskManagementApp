@@ -10,9 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200");
+        policy
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .SetIsOriginAllowed(_ => true);
     });
 });
 
@@ -22,8 +25,7 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
-app.UseHttpsRedirection();
-app.UseCors();
+app.UseCors("AllowAll");
 
 if (app.Environment.IsDevelopment())
 {
