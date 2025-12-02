@@ -1,41 +1,76 @@
+using Tasks.Api.Middleware;
+using Tasks.Api.Models;
+using Tasks.Application.Abstractions;
+using Tasks.Application.Common;
+using Tasks.Application.Services;
+using Tasks.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200");
+    });
+});
+
+builder.Services.AddInfrastructure();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseMiddleware<GlobalExceptionMiddleware>();
+app.UseHttpsRedirection();
+app.UseCors();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
+app.MapGet("/api/tasks", async (ITaskService service) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var tasks = await service.GetAllAsync();
+    return Results.Ok(tasks);
+});
 
-app.MapGet("/weatherforecast", () =>
+app.MapPost("/api/tasks", async (CreateTaskRequest request, ITaskService service) =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    var result = await service.CreateAsync(request.Title);
+    return ToHttpResult(result, createdRoute: $"/api/tasks/{result.Value?.Id}");
+});
+
+app.MapPut("/api/tasks/{id:guid}/toggle", async (Guid id, ITaskService service) =>
+{
+    var result = await service.ToggleAsync(id);
+    return ToHttpResult(result);
+});
+
+app.MapDelete("/api/tasks/{id:guid}", async (Guid id, ITaskService service) =>
+{
+    var result = await service.DeleteAsync(id);
+    return result.IsSuccess ? Results.NoContent() : Results.NotFound(new { error = result.Error });
+});
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+IResult ToHttpResult<T>(Result<T> result, string? createdRoute = null)
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    if (result.IsSuccess && createdRoute is not null)
+    {
+        return Results.Created(createdRoute, result.Value);
+    }
+
+    if (result.IsSuccess)
+    {
+        return Results.Ok(result.Value);
+    }
+
+    var status = result.Error?.Contains("not found", StringComparison.OrdinalIgnoreCase) == true
+        ? StatusCodes.Status404NotFound
+        : StatusCodes.Status400BadRequest;
+
+    return Results.Json(new { error = result.Error }, statusCode: status);
 }
