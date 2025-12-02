@@ -2,6 +2,9 @@
 
 Full-stack task management application developed as a technical test for Full Stack Developer position. The project demonstrates best practices in architecture, component design, and frontend-backend communication.
 
+<img width="2938" height="1376" alt="image" src="https://github.com/user-attachments/assets/2025698e-7930-45b5-8970-3eb926f3c31e" />
+
+
 ## 📋 About the Project
 
 This project was developed following the requirements of a technical test that evaluates:
