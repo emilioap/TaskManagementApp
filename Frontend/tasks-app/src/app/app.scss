@@ -13,12 +13,16 @@
   font-weight: 600;
 }
 
+.spacer {
+  flex: 1;
+}
+
 .container {
-  max-width: 960px;
+  max-width: 1200px;
   margin: 2rem auto;
   padding: 0 1rem 3rem;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 
@@ -31,4 +35,11 @@
 
 .list-section {
   box-shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+}
+
+@media (min-width: 960px) {
+  .container {
+    grid-template-columns: minmax(340px, 420px) 1fr;
+    align-items: start;
+  }
 }

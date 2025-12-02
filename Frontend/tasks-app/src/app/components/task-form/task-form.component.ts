@@ -29,12 +29,18 @@ import { MatInputModule } from '@angular/material/input';
     `
       .task-form {
         display: flex;
-        gap: 1rem;
-        align-items: flex-start;
+        gap: 0.75rem;
+        align-items: stretch;
       }
 
       mat-form-field {
         flex: 1;
+        margin: 0;
+      }
+
+      button {
+        height: 56px;
+        align-self: stretch;
       }
 
       @media (max-width: 600px) {
