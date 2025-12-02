@@ -24,6 +24,12 @@ public class TaskRepository : ITaskRepository
         return await _context.Tasks.FindAsync(id);
     }
 
+    public async Task<bool> ExistsByTitleAsync(string title)
+    {
+        var normalized = title.Trim().ToLowerInvariant();
+        return await _context.Tasks.AsNoTracking().AnyAsync(t => t.Title.ToLower() == normalized);
+    }
+
     public async Task<TaskItem> AddAsync(TaskItem task)
     {
         _context.Tasks.Add(task);

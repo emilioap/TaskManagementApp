@@ -25,7 +25,14 @@ public class TaskService : ITaskService
             return Result<TaskItem>.Failure("Task title is required.");
         }
 
-        var task = new TaskItem { Title = title.Trim() };
+        var normalized = title.Trim();
+        var exists = await _repository.ExistsByTitleAsync(normalized);
+        if (exists)
+        {
+            return Result<TaskItem>.Failure("Task with this title already exists.");
+        }
+
+        var task = new TaskItem { Title = normalized };
         var created = await _repository.AddAsync(task);
 
         _logger.LogInformation("Task created with Id {TaskId}", created.Id);
