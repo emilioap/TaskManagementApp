@@ -1,18 +1,19 @@
 @use '@angular/material' as mat;
 
 @include mat.core();
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
 
-$light-theme: mat.define-theme((
-  color: (
-    theme-type: light,
-    primary: mat.$indigo-palette,
-    tertiary: mat.$pink-palette
-  ),
-  density: (
-    scale: 0
-  )
-));
+* {
+  box-sizing: border-box;
+}
 
-:root {
-  @include mat.all-component-themes($light-theme);
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f6fb;
+}
+
+.error-snackbar {
+  background-color: #c62828;
+  color: #fff;
 }

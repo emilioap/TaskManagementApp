@@ -1,0 +1,34 @@
+ :host {
+  display: block;
+  min-height: 100vh;
+  background: radial-gradient(circle at 20% 20%, rgba(63, 81, 181, 0.08), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(233, 30, 99, 0.1), transparent 40%),
+    #f5f6fb;
+  color: #0f1115;
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.container {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 0 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-section {
+  background: white;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+}
+
+.list-section {
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+}
